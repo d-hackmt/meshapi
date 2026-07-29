@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+python-dotenv
+meshapi
+pinecone
+requests
+pydantic
