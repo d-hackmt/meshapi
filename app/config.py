@@ -5,18 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def _require(name: str) -> str:
-    value = os.getenv(name)
-    if not value:
-        raise RuntimeError(f"Missing required environment variable: {name}")
-    return value
-
-
 class Settings:
     # MeshAPI gateway
     meshapi_base_url: str = os.getenv("MESHAPI_BASE_URL", "https://api.meshapi.ai")
     meshapi_token: str = os.getenv("MESH_API_KEY") or os.getenv("MESHAPI_TOKEN") or ""
-    meshapi_chat_model: str = os.getenv("MESHAPI_CHAT_MODEL", "groq/llama-3.3-70b-versatile")
+    meshapi_chat_model: str = os.getenv("MESHAPI_CHAT_MODEL", "openai/gpt-4o-mini")
 
     # Jina embeddings
     jina_api_key: str = os.getenv("JINA_API_KEY", "")

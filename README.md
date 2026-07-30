@@ -6,7 +6,8 @@ OpenAI-shaped API, many LLM providers behind it.
 ## Contents
 
 - **`01_meshapi_basics.ipynb`** — gateway fundamentals: client setup, live model discovery, chat
-  completions across two providers (Mistral, Groq), streaming, and the `compare` endpoint.
+  completions across two providers (OpenAI, Mistral by default — easily swapped), streaming, and the
+  `compare` endpoint.
 - **`02_rag_multiagent.ipynb`** — a RAG + multi-agent capstone: Jina embeddings + Pinecone for
   retrieval, and a Researcher → Writer → Critic pipeline built with LangChain's `create_agent`,
   each agent routed through a different provider via the MeshAPI gateway.
