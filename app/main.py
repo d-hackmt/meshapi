@@ -21,8 +21,9 @@ def on_startup() -> None:
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
+        request,
         "index.html",
-        {"request": request, "question": "", "answer": None, "sources": []},
+        {"question": "", "answer": None, "sources": []},
     )
 
 
@@ -30,8 +31,9 @@ def home(request: Request) -> HTMLResponse:
 def ask_form(request: Request, question: str = Form(...)) -> HTMLResponse:
     answer_text, sources = rag.answer(question)
     return templates.TemplateResponse(
+        request,
         "index.html",
-        {"request": request, "question": question, "answer": answer_text, "sources": sources},
+        {"question": question, "answer": answer_text, "sources": sources},
     )
 
 
