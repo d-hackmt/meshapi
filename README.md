@@ -8,9 +8,9 @@ OpenAI-shaped API, many LLM providers behind it.
 - **`01_meshapi_basics.ipynb`** — gateway fundamentals: client setup, live model discovery, chat
   completions across two providers (OpenAI, Mistral by default — easily swapped), streaming, and the
   `compare` endpoint.
-- **`02_rag_multiagent.ipynb`** — a RAG + multi-agent capstone: Jina embeddings + Pinecone for
-  retrieval, and a Researcher → Writer → Critic pipeline built with LangChain's `create_agent`,
-  each agent routed through a different provider via the MeshAPI gateway.
+- **`02_rag_multiagent.ipynb`** — a RAG + multi-agent capstone: MeshAPI's own embeddings endpoint +
+  Pinecone for retrieval, and a Researcher → Writer → Critic pipeline built with LangChain's
+  `create_agent`, each agent routed through a different provider via the MeshAPI gateway.
 - **`app/`** — the same simple RAG pipeline as a modular FastAPI backend with a Jinja-templated
   HTML frontend (no notebook required).
 
@@ -19,10 +19,9 @@ OpenAI-shaped API, many LLM providers behind it.
 ```
 app/
   config.py          settings loaded from environment variables
-  embeddings.py       Jina embeddings client
   vectorstore.py       Pinecone index setup + query
   data.py               sample knowledge base + chunking
-  meshapi_client.py   MeshAPI gateway client (chat completions, model discovery)
+  meshapi_client.py   MeshAPI gateway client (chat completions, embeddings)
   rag.py                 ingest / retrieve / answer orchestration
   schemas.py           request/response models
   main.py               FastAPI routes
@@ -62,6 +61,5 @@ curl -X POST http://127.0.0.1:8000/api/ask \
 ### Environment variables
 
 See `.env.example` for the full list. You'll need:
-- A MeshAPI key (`MESH_API_KEY`) from the [MeshAPI dashboard](https://developers.meshapi.ai)
-- A Jina AI key (`JINA_API_KEY`) from [jina.ai](https://jina.ai)
+- A MeshAPI key (`MESH_API_KEY`) from the [MeshAPI dashboard](https://developers.meshapi.ai) — used for both chat and embeddings
 - A Pinecone key (`PINECONE_API_KEY`) from [pinecone.io](https://www.pinecone.io)

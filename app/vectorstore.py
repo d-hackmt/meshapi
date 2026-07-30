@@ -12,7 +12,7 @@ def get_index():
     if settings.pinecone_index_name not in existing:
         _pc.create_index(
             name=settings.pinecone_index_name,
-            dimension=settings.jina_dimensions,
+            dimension=settings.embedding_dimensions,
             metric="cosine",
             spec=ServerlessSpec(cloud=settings.pinecone_cloud, region=settings.pinecone_region),
         )

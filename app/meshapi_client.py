@@ -1,4 +1,4 @@
-from meshapi import ChatCompletionParams, ChatMessage, MeshAPI
+from meshapi import ChatCompletionParams, ChatMessage, EmbeddingsParams, MeshAPI
 
 from .config import settings
 
@@ -17,7 +17,12 @@ def ask(prompt: str, model: str | None = None, temperature: float = 0.2, max_tok
     return resp.choices[0].message.content
 
 
-def list_model_ids(provider: str) -> list[str]:
-    resp = _client.models.list(provider=provider)
-    items = getattr(resp, "data", resp)
-    return [m.id for m in items]
+def embed(texts: list[str]) -> list[list[float]]:
+    resp = _client.embeddings.create(
+        EmbeddingsParams(
+            model=settings.meshapi_embedding_model,
+            input=texts,
+            dimensions=settings.embedding_dimensions,
+        )
+    )
+    return [d.embedding for d in sorted(resp.data, key=lambda d: d.index)]

@@ -5,5 +5,4 @@ python-multipart
 python-dotenv
 meshapi
 pinecone
-requests
 pydantic

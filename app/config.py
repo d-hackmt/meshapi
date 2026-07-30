@@ -10,11 +10,8 @@ class Settings:
     meshapi_base_url: str = os.getenv("MESHAPI_BASE_URL", "https://api.meshapi.ai")
     meshapi_token: str = os.getenv("MESH_API_KEY") or os.getenv("MESHAPI_TOKEN") or ""
     meshapi_chat_model: str = os.getenv("MESHAPI_CHAT_MODEL", "openai/gpt-4o-mini")
-
-    # Jina embeddings
-    jina_api_key: str = os.getenv("JINA_API_KEY", "")
-    jina_model: str = os.getenv("JINA_MODEL", "jina-embeddings-v3")
-    jina_dimensions: int = int(os.getenv("JINA_DIMENSIONS", "1024"))
+    meshapi_embedding_model: str = os.getenv("MESHAPI_EMBEDDING_MODEL", "openai/text-embedding-3-small")
+    embedding_dimensions: int = int(os.getenv("EMBEDDING_DIMENSIONS", "1024"))
 
     # Pinecone
     pinecone_api_key: str = os.getenv("PINECONE_API_KEY", "")
@@ -30,7 +27,6 @@ class Settings:
             name
             for name, value in [
                 ("MESH_API_KEY", self.meshapi_token),
-                ("JINA_API_KEY", self.jina_api_key),
                 ("PINECONE_API_KEY", self.pinecone_api_key),
             ]
             if not value

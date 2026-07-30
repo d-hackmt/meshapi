@@ -1,11 +1,11 @@
-from . import data, embeddings, meshapi_client, vectorstore
+from . import data, meshapi_client, vectorstore
 from .config import settings
 
 
 def ingest() -> int:
-    """Chunk the sample knowledge base, embed it with Jina, and upsert into Pinecone."""
+    """Chunk the sample knowledge base, embed it via MeshAPI, and upsert into Pinecone."""
     chunks = data.build_chunks()
-    vectors = embeddings.embed([c["text"] for c in chunks], task="retrieval.passage")
+    vectors = meshapi_client.embed([c["text"] for c in chunks])
 
     pinecone_vectors = [
         {
@@ -22,7 +22,7 @@ def ingest() -> int:
 
 def retrieve(query_text: str, top_k: int | None = None) -> list[dict]:
     top_k = top_k or settings.top_k
-    query_vector = embeddings.embed([query_text], task="retrieval.query")[0]
+    query_vector = meshapi_client.embed([query_text])[0]
     matches = vectorstore.query(query_vector, top_k=top_k)
     return [
         {"score": m["score"], "title": m["metadata"]["title"], "text": m["metadata"]["text"]}
