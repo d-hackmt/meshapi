@@ -5,6 +5,13 @@ A plain-language inventory of everything MeshAPI offers, checked against the off
 copied from the docs. Goal: know exactly what's available, and exactly how much of it our
 notebooks/app actually use so far.
 
+**Update:** every feature listed below has since been individually tested live in
+**`features.ipynb`** — a dedicated feature-tour notebook, executed end-to-end against a real key
+with real outputs (a generated image, a ~3s generated video, a TTS→STT round trip, etc.). The
+"Used by us?" columns below still mean *used in our actual RAG/agent notebooks and app*, not "ever
+tested" — `features.ipynb` deliberately covers everything regardless of whether our production demos
+use it, to answer "what's even available" separately from "what did we build with."
+
 ---
 
 ## 1. What is MeshAPI, in one picture
@@ -161,7 +168,8 @@ So "tool calling" and "structured output" in the table above are true MeshAPI/mo
 
 ## 5. Everything we have **not** tried yet (candidates for a "feature tour" notebook)
 
-In rough order of "most useful to show a class":
+**Done** — all of these are now demoed and live-tested in `features.ipynb`. Kept here as the original
+planning list, in rough order of "most useful to show a class":
 
 1. **MeshAPI's fully managed RAG** (`/v1/files`, `/v1/files/search`) — we already use its embeddings
    endpoint; this would replace our own Pinecone chunk/embed/upsert/query code entirely and show
@@ -178,6 +186,14 @@ In rough order of "most useful to show a class":
 
 ---
 
+## 5.1 Roadmap / not built yet
+
+- **Voice input for RAG** — add a mic/audio input option to the RAG notebook and FastAPI app, using
+  MeshAPI's speech-to-text (`/v1/audio/transcriptions`) models to transcribe a spoken question before
+  it goes through the existing retrieve → answer pipeline. Not implemented yet — planned for later.
+
+---
+
 ## 6. Documentation gaps we found (for transparency)
 
 - Moderations endpoint pricing is not published anywhere in the docs.
@@ -188,6 +204,41 @@ In rough order of "most useful to show a class":
 
 ---
 
+## 6.1 SDK/API quirks found while actually running every feature (`features.ipynb`)
+
+Things that only showed up by executing real code against a real key, not from reading docs:
+
+- **The installed Python SDK (`meshapi` 0.1.11) has no `.parse()` convenience method** for structured
+  outputs, despite it being referenced elsewhere — `client.chat.completions.parse(...)` raises
+  `AttributeError`. Workaround: pass `response_format={"type": "json_schema", "json_schema": {...}}`
+  directly on `.create()` and validate the JSON string yourself with the Pydantic model
+  (`Model.model_validate_json(resp.choices[0].message.content)`).
+- **Responses API output items are raw dicts, not typed Pydantic objects** — inconsistent with every
+  other resource in the SDK. Access via `r.output[0]["content"][0]["text"]`, not attribute access.
+- **`client.models.list(provider="mistral")` returns 0 results** even though Mistral models exist —
+  most catalog entries have `provider: null` server-side; filter the full list client-side by id
+  prefix or `.brand` instead (see section 3.1's note, and `01_meshapi_basics.ipynb`/
+  `02_rag_multiagent.ipynb` for the working pattern).
+- **TTS needs the full `provider/model` id**, not a bare model name (`hexgrad/kokoro-82m`, not
+  `kokoro-82m`) — and **ElevenLabs models specifically require an explicit `voice` param**, or the
+  call fails with a 422.
+- **Not every model that reports `supports_batching: true` supports batching for chat completions**
+  — some are video/image models with their own batch semantics. Filter for `model_type == "text"` too.
+- **Memory, API key management, and Organizations/Teams all return `401 Token decode failed: Not
+  enough segments`** when called with an `rsk_...` API key — confirmed live, not just documented.
+  They need a dashboard login session token (JWT) instead. `balance` and `usage/rate-limits` work
+  fine with the plain API key; `usage` (spend summary) needs an `org_id` this personal key doesn't have.
+- **Gateway response caching confirmed live**: sending the identical request twice (temperature 0)
+  showed `X-Cache: HIT` on the second call via a raw HTTP request — the SDK doesn't expose response
+  headers, so this needs `requests`/`httpx` directly, not the `MeshAPI` client.
+- **Video generation was fast**: a 3-second clip on `byteplus/seedance-1-0-pro-fast` completed in
+  roughly 30 seconds end-to-end, not the "hours" async framing might suggest.
+- The `X-Mesh-Routing-Attempts`/`X-Mesh-Routing-Fallback` headers and `usage.classifier_tokens` (on
+  auto-routed responses) aren't always present — they showed up in some runs and not others, so
+  treat them as present-when-relevant rather than guaranteed on every response.
+
+---
+
 ## 7. Sources
 
 - `developers.meshapi.ai` — full doc site, crawled via its `llms.txt` index (Introduction, Guides,
@@ -195,3 +246,5 @@ In rough order of "most useful to show a class":
 - Live verification against our real MeshAPI key: `client.models.list()` (997 models / 124 brands /
   44 embedding models), `client.moderations.create(...)` (full 13-category response), and
   `dir(MeshAPI(...))` (confirms which resources the Python SDK actually wraps)
+- **`features.ipynb`** — every feature in this document individually tested live, executed end-to-end
+  via `jupyter nbconvert --execute` with real outputs (not just written and assumed to work)
