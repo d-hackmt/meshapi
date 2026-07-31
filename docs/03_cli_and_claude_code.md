@@ -45,15 +45,34 @@ etc.), and exposes one command: **`meshapi`** (not `meshapi-code` — that's jus
 Installed 1 executable: meshapi
 ```
 
-If `uv` warns that its tool bin directory isn't on your `PATH` yet, run `uv tool update-shell` once
-and restart your terminal.
+### Getting `meshapi` on your PATH: local vs global
 
-**Gotcha hit while testing this on Windows:** `uv tool update-shell` writes the PATH change
-permanently, but any `cmd.exe` window that was *already open* keeps its old environment snapshot —
-`meshapi --version` will still say `'meshapi' is not recognized` until you open a **brand new**
-window. Fastest fix without restarting: `set PATH=%USERPROFILE%\.local\bin;%PATH%` in the current
-window. Also, `meshapi` is invoked directly, not through `uv` — `uv meshapi --version` is wrong
-(`uv` doesn't know a `meshapi` subcommand); just run `meshapi --version`.
+If `meshapi --version` says `'meshapi' is not recognized`, it's a PATH problem — two ways to fix it,
+and they behave differently. This distinction is the thing that actually tripped us up testing this:
+
+```mermaid
+flowchart TB
+    Problem["'meshapi' not recognized"] --> Choice{"Fix it for just\nthis window, or\nfor good?"}
+    Choice -->|"just this window\n(local, temporary)"| Local["set PATH=%USERPROFILE%\.local\bin;%PATH%\n\nworks immediately\nforgotten when window closes"]
+    Choice -->|"every future window\n(global, permanent)"| Global["uv tool update-shell\n\nwrites the change permanently...\nbut only NEW windows see it"]
+    Global --> Gotcha["This window still won't work!\nOpen a brand new terminal window\nto actually see the change"]
+```
+
+- **Local / temporary fix** (works right away, only for the terminal window you're in):
+  ```cmd
+  set PATH=%USERPROFILE%\.local\bin;%PATH%
+  ```
+- **Global / permanent fix** (every future terminal, forever):
+  ```cmd
+  uv tool update-shell
+  ```
+  **The gotcha we actually hit:** this writes the change permanently, but any `cmd.exe` window that
+  was *already open* keeps its old environment snapshot from before the change — `meshapi --version`
+  will still fail in that same window. You must open a **brand new** window for the global fix to
+  take effect. It's not broken, it's just not retroactive.
+
+One more mix-up worth flagging: `meshapi` is invoked directly, not through `uv`. `uv meshapi
+--version` is wrong (`uv` doesn't have a `meshapi` subcommand) — just run `meshapi --version`.
 
 ### First run, step by step (Windows `cmd.exe`)
 
@@ -64,7 +83,7 @@ meshapi
 ```
 
 That drops you into an interactive chat. Type a question or instruction and hit enter — e.g.
-`explain what app/rag.py does`. `set MESH_API_KEY=...` only lasts for that terminal session; run
+`explain what native_rag_app/rag.py does`. `set MESH_API_KEY=...` only lasts for that terminal session; run
 `/login` once inside `meshapi` instead if you want the key remembered permanently (see
 Authentication above).
 

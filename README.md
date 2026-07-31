@@ -26,6 +26,14 @@ meshapi/
 *(An earlier Pinecone-based version of this RAG app, `app/`, plus its own root-level
 `static/`/`templates/`, has been removed -- `native_rag_app/` replaced it entirely.)*
 
+```mermaid
+flowchart LR
+    Repo(("meshapi/")) --> App["native_rag_app/\n(the real app -- study this)"]
+    Repo --> Exp["experiments/\n(notebooks, guided tour)"]
+    Repo --> Docs["docs/\n(written explanations)"]
+    Repo --> Out["outputs/\n(generated media)"]
+```
+
 ### `native_rag_app/` -- the star of the repo
 
 A full **Retrieval-Augmented Generation (RAG)** app where *every* piece of intelligence comes from
@@ -69,6 +77,16 @@ comparisons) -> `06_progress_summary.md` (changelog).
 
 The whole point of MeshAPI is that these steps all run through **one client, one key**. Here's the
 flow the native RAG app follows:
+
+```mermaid
+flowchart LR
+    Q(("Your question")) --> Mod{"Moderation:\nsafe?"}
+    Mod -->|no| Reject["Rejected, HTTP 400"]
+    Mod -->|yes| Search["Search MeshAPI's\nRAG store"]
+    Search --> LLM["Chat completion,\nwith the docs found"]
+    LLM --> Answer(("Answer"))
+    Answer -.->|optional| TTS["Spoken back to you"]
+```
 
 1. **Create one client.** You construct a single `MeshAPI(base_url=..., token=...)` client. Every
    capability below hangs off it -- no per-service SDKs or keys.
@@ -139,8 +157,8 @@ MESHAPI_TTS_VOICE=af_heart
 MESHAPI_STT_MODEL=elevenlabs/scribe_v1
 ```
 
-(The `.env.example` also lists Pinecone variables -- you can ignore those; the native RAG app does
-not use Pinecone.)
+No Pinecone or vector-database variables needed at all -- retrieval runs entirely through MeshAPI's
+managed RAG store.
 
 ---
 
