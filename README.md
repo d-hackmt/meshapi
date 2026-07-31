@@ -37,6 +37,9 @@ flowchart LR
 
 ### `native_rag_app/` -- the star of the repo
 
+<img width="956" height="372" alt="image" src="https://github.com/user-attachments/assets/1a62460a-911b-4793-a74a-48127a6ffa81" />
+
+
 A full **Retrieval-Augmented Generation (RAG)** app where *every* piece of intelligence comes from
 MeshAPI -- no separate vector database, no separate embeddings service, no separate speech service.
 One key does it all. It also has **voice**: you can speak your question and hear the answer read
