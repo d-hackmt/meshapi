@@ -22,6 +22,9 @@ OpenAI-shaped API, many LLM providers behind it.
   import styles. `features.ipynb` imports everything up front in one setup cell; the `_lazy_imports`
   copy imports each SDK class right where it's first used, section by section, so any single section
   is readable on its own without scrolling back to cell 3. Same cells, same live outputs otherwise.
+- **`cli_and_claude_code.md`** — how to use `meshapi-code` (MeshAPI's own terminal coding agent,
+  `uv tool install meshapi-code`) and how to add MeshAPI as an MCP tool inside Claude Code itself —
+  two separate, unrelated integrations, both covered with verified install/config details.
 
 ## FastAPI RAG app
 
