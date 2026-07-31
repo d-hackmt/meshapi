@@ -19,6 +19,7 @@ meshapi/
   experiments/       Jupyter notebooks -- the guided feature tour
   docs/              Ordered, plain-language documentation (read docs/README.md first)
   outputs/           Generated media (images, speech, video) produced by the notebooks
+  progress_summary.md   Changelog of work done in this repo
   requirements.txt   Python dependencies
   .env.example       Template for your environment variables
 ```
@@ -69,7 +70,8 @@ native_rag_app/
 Start with **[`docs/README.md`](docs/README.md)**, which orders everything. In short:
 `01_research.md` (feature inventory) -> `02_features.md` (notebook walkthrough) ->
 `03_cli_and_claude_code.md` + `04_mcp_capabilities.md` + `05_meshapi_vs_claude_code.md` (tooling and
-comparisons) -> `06_progress_summary.md` (changelog).
+comparisons) -> `06_native_rag_app.md` (the app itself). The changelog now lives at the repo root:
+**[`progress_summary.md`](progress_summary.md)**.
 
 ---
 

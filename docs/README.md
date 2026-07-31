@@ -5,8 +5,7 @@ tooling and comparisons.
 
 ```mermaid
 flowchart LR
-    A["01 + 02\nwhat MeshAPI offers"] --> B["03 + 04 + 05\ntooling: CLI, MCP,\nClaude Code"] --> C["07\nthe real app"]
-    D["06: changelog"] -.-> C
+    A["01 + 02\nwhat MeshAPI offers"] --> B["03 + 04 + 05\ntooling: CLI, MCP,\nClaude Code"] --> C["06\nthe real app"]
 ```
 
 | # | File | What it covers |
@@ -16,5 +15,6 @@ flowchart LR
 | 03 | [`03_cli_and_claude_code.md`](03_cli_and_claude_code.md) | Two separate integrations: the `meshapi-code` terminal agent, and adding MeshAPI as an MCP tool inside Claude Code. |
 | 04 | [`04_mcp_capabilities.md`](04_mcp_capabilities.md) | `meshapi-code` vs the MCP server side by side — what MCP can and can't do (checked live). |
 | 05 | [`05_meshapi_vs_claude_code.md`](05_meshapi_vs_claude_code.md) | `meshapi-code` vs Claude Code as products — how each is actually built, not just what commands they have. |
-| 06 | [`06_progress_summary.md`](06_progress_summary.md) | Changelog of work done in this repo since the last commit. |
-| 07 | [`07_native_rag_app.md`](07_native_rag_app.md) | `native_rag_app/` explained — architecture, env keys, endpoints, the account-wide-RAG-store gotcha and its fix, moderation, and confirmed-live test results. |
+| 06 | [`06_native_rag_app.md`](06_native_rag_app.md) | `native_rag_app/` explained — architecture, env keys, endpoints, the account-wide-RAG-store gotcha and its fix, moderation, and confirmed-live test results. |
+
+The changelog (`progress_summary.md`) now lives at the repo root, not here.

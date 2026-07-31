@@ -173,7 +173,7 @@ in rough order of "most useful to show a class":
 
 1. **MeshAPI's fully managed RAG** (`/v1/files`, `/v1/files/search`) — now `native_rag_app/`'s actual
    retrieval layer, replacing what used to be hand-written Pinecone chunk/embed/upsert/query code
-   (that app has since been deleted). See `docs/07_native_rag_app.md`.
+   (that app has since been deleted). See `docs/06_native_rag_app.md`.
 2. **Moderations** — now actually gates every question in `native_rag_app/` before it reaches the
    model, not just a standalone demo.
 3. **Auto Router** (`model: "auto"`) — neat "let the gateway pick" demo.

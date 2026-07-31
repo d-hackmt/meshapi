@@ -115,7 +115,7 @@ Read and verified every file in `docs/` end to end. Real issues found and fixed:
   Rewritten with corrected facts, 3 diagrams, and less overlap with doc 04.
 - Added small flow diagrams to every doc that lacked one, including the root `README.md` and
   `docs/README.md` itself.
-- `docs/07_native_rag_app.md` gained a section on what chunks/embeds/stores the documents — checked
+- `docs/06_native_rag_app.md` (then `07`, since renumbered) gained a section on what chunks/embeds/stores the documents — checked
   MeshAPI's official docs directly and confirmed the chunking strategy, internal embedding model, and
   vector database are all undisclosed (a genuine black box), documenting what *is* observable instead
   (`chunk_index` on results, `total_tokens` billed per file).
