@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MeshAPI Native RAG Demo</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Nimbus Cloud Support Assistant</h1>
+      <p class="subtitle">
+        RAG demo — powered entirely by <strong>MeshAPI's built-in RAG</strong> (file upload + search,
+        no Pinecone or vector DB code), plus <strong>speech-to-text</strong> and
+        <strong>text-to-speech</strong> so you can talk to it instead of typing.
+      </p>
+    </header>
+
+    <p class="ingest-hint">
+      First time running this? Index the sample knowledge base once:
+      <button id="ingest-btn" type="button">Index knowledge base</button>
+      <span id="ingest-status"></span>
+    </p>
+
+    <form id="ask-form" class="ask-form">
+      <input
+        id="question-input"
+        type="text"
+        name="question"
+        placeholder="e.g. What happens if I go over my storage limit?"
+        autofocus
+      >
+      <button type="submit">Ask</button>
+      <button id="mic-btn" type="button" title="Ask by voice">🎤</button>
+    </form>
+
+    <label class="speak-toggle">
+      <input type="checkbox" id="speak-toggle" checked>
+      speak the answer back
+    </label>
+
+    <p id="status" class="status"></p>
+
+    <section id="answer-section" class="answer" hidden>
+      <h2>Answer</h2>
+      <p id="answer-question" class="heard"></p>
+      <p id="answer-text"></p>
+      <audio id="answer-audio" controls hidden></audio>
+    </section>
+
+    <section id="sources-section" class="sources" hidden>
+      <h2>Sources</h2>
+      <ul id="sources-list"></ul>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+:root {
+  color-scheme: light dark;
+  --fg: #1a1a1a;
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #4f46e5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #f3f4f6;
+    --bg: #111827;
+    --muted: #9ca3af;
+    --border: #374151;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 0;
+}
+
+.ask-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.ask-form input {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+}
+
+.ask-form button {
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+#mic-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: inherit;
+  padding: 0.65rem 0.9rem;
+}
+
+#mic-btn.recording {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.speak-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.status {
+  min-height: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.ingest-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.answer, .sources {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.answer h2, .sources h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.answer .heard {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.answer audio {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.sources ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.sources li {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.sources .score {
+  float: right;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.sources p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}

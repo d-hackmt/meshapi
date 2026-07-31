@@ -1,4 +1,5 @@
 .env
+native_rag_app/.rag_state.json
 __pycache__/
 *.pyc
 .venv/

@@ -6,3 +6,4 @@ python-dotenv
 meshapi
 pinecone
 pydantic
+requests 
