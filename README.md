@@ -1,146 +1,178 @@
-# meshapi
+# Welcome to the MeshAPI Implementation Repository
 
-Teaching demos for the [MeshAPI](https://developers.meshapi.ai) AI model gateway — one API key, one
-OpenAI-shaped API, many LLM providers behind it.
+Welcome! This repository is a hands-on tour of **[MeshAPI](https://developers.meshapi.ai)** -- an
+AI model gateway that gives you **one API key and one OpenAI-shaped API** in front of many LLM
+providers (OpenAI, Mistral, and more), plus embeddings, a managed RAG file store, moderation,
+speech-to-text, and text-to-speech.
 
-## Contents
+The goal here is simple: **learn how MeshAPI actually works, step by step**, by reading real,
+runnable code -- not just docs. Everything in this repo was built and verified against a live API
+key.
 
-- **`01_meshapi_basics.ipynb`** — gateway fundamentals: client setup, live model discovery, chat
-  completions across two providers (OpenAI, Mistral by default — easily swapped), streaming, and the
-  `compare` endpoint.
-- **`02_rag_multiagent.ipynb`** — a RAG + multi-agent capstone: MeshAPI's own embeddings endpoint +
-  Pinecone for retrieval, and a Researcher → Writer → Critic pipeline built with LangChain's
-  `create_agent`, each agent routed through a different provider via the MeshAPI gateway.
-- **`app/`** — the same simple RAG pipeline as a modular FastAPI backend with a Jinja-templated
-  HTML frontend (no notebook required). Retrieval is self-managed: we chunk, embed, and query a
-  Pinecone index ourselves.
-- **`native_rag_app/`** — the same demo again, but retrieval is entirely MeshAPI's managed RAG
-  service (`/v1/files` upload + search) instead of Pinecone — no chunking code, no vector DB. It also
-  adds voice: speak your question (speech-to-text) and hear the answer read back (text-to-speech).
-  See [Comparing the two RAG apps](#comparing-the-two-rag-apps) below.
-- **`features.ipynb`** / **`features_lazy_imports.ipynb`** — the full feature-tour notebook, in two
-  import styles. `features.ipynb` imports everything up front in one setup cell; the `_lazy_imports`
-  copy imports each SDK class right where it's first used, section by section, so any single section
-  is readable on its own without scrolling back to cell 3. Same cells, same live outputs otherwise.
-- **`cli_and_claude_code.md`** — how to use `meshapi-code` (MeshAPI's own terminal coding agent,
-  `uv tool install meshapi-code`) and how to add MeshAPI as an MCP tool inside Claude Code itself —
-  two separate, unrelated integrations, both covered with verified install/config details.
-- **`mcp_capabilities.md`** — `meshapi-code` vs the MCP server compared side by side (a whole separate
-  agent vs. extra tools for Claude Code), what MCP can and can't do (no audio/video/batch — verified
-  live), and real generate-image/video/TTS examples run through each.
+---
 
-## FastAPI RAG app
+## What's in this repo
 
 ```
-app/
-  config.py          settings loaded from environment variables
-  vectorstore.py       Pinecone index setup + query
-  data.py               sample knowledge base + chunking
-  meshapi_client.py   MeshAPI gateway client (chat completions, embeddings)
-  rag.py                 ingest / retrieve / answer orchestration
-  schemas.py           request/response models
-  main.py               FastAPI routes
-templates/index.html   Jinja UI (question form, answer, sources)
-static/style.css
+meshapi/
+  native_rag_app/    A complete RAG app built entirely on MeshAPI (this is the main thing to study)
+  experiments/       Jupyter notebooks -- the guided feature tour
+  docs/              Ordered, plain-language documentation (read docs/README.md first)
+  outputs/           Generated media (images, speech, video) produced by the notebooks
+  requirements.txt   Python dependencies
+  .env.example       Template for your environment variables
 ```
 
-### Setup
+*(There's also an `app/` folder from an earlier Pinecone-based version of this RAG app, plus its own
+`static/`/`templates/` at the repo root -- both are being retired in favor of `native_rag_app/` and
+not part of the current tour.)*
+
+### `native_rag_app/` -- the star of the repo
+
+A full **Retrieval-Augmented Generation (RAG)** app where *every* piece of intelligence comes from
+MeshAPI -- no separate vector database, no separate embeddings service, no separate speech service.
+One key does it all. It also has **voice**: you can speak your question and hear the answer read
+back.
+
+```
+native_rag_app/
+  config.py          Settings loaded from environment variables
+  data.py            The sample knowledge base (plain text -- MeshAPI chunks it server-side)
+  meshapi_client.py  Thin wrapper around the MeshAPI SDK: chat, moderation, RAG upload/search, STT, TTS
+  rag.py             The RAG orchestration: ingest / retrieve / answer
+  schemas.py         Request/response models
+  main.py            FastAPI routes, including the voice endpoint
+  templates/index.html   Single-page UI: type or speak a question, hear the answer back
+  static/app.js      Mic recording (MediaRecorder) + fetch calls to the JSON API
+  static/style.css
+```
+
+### `experiments/` -- the notebooks
+
+- **`01_meshapi_basics.ipynb`** -- gateway fundamentals: client setup, live model discovery, chat
+  completions across multiple providers, streaming, and the `compare` endpoint.
+- **`02_rag_multiagent.ipynb`** -- a RAG + multi-agent capstone (Researcher -> Writer -> Critic),
+  each agent routed through a different provider via MeshAPI.
+- **`features.ipynb`** / **`features_lazy_imports.ipynb`** -- the full feature tour. Same cells and
+  live outputs; the `_lazy_imports` copy imports each SDK class right where it's first used so any
+  section reads on its own.
+
+### `docs/` -- the written guides
+
+Start with **[`docs/README.md`](docs/README.md)**, which orders everything. In short:
+`01_research.md` (feature inventory) -> `02_features.md` (notebook walkthrough) ->
+`03_cli_and_claude_code.md` + `04_mcp_capabilities.md` + `05_meshapi_vs_claude_code.md` (tooling and
+comparisons) -> `06_progress_summary.md` (changelog).
+
+---
+
+## How MeshAPI works, step by step
+
+The whole point of MeshAPI is that these steps all run through **one client, one key**. Here's the
+flow the native RAG app follows:
+
+1. **Create one client.** You construct a single `MeshAPI(base_url=..., token=...)` client. Every
+   capability below hangs off it -- no per-service SDKs or keys.
+
+2. **Upload documents to the managed RAG store.** Instead of chunking and embedding yourself, you
+   hand raw files to `client.rag.upload_file(..., embed=True)`. MeshAPI chunks, embeds, and stores
+   them server-side, and hands back a `file_id`. (See `meshapi_client.upload_document`.)
+
+3. **Wait for embedding to finish.** Uploads embed asynchronously; you poll
+   `client.rag.get(file_id).embedding_status` until it's `ready`. (See `rag.ingest`.)
+
+4. **Search / retrieve.** For a user question, `client.rag.search(SearchRequest(query, top_k,
+   file_ids=...))` returns the most relevant chunks. We pass our own `file_ids` to scope the search
+   (see the gotcha below). (See `meshapi_client.search`.)
+
+5. **Moderate the input.** Before answering, `client.moderations.create(...)` flags unsafe
+   questions so we can reject them. (See `meshapi_client.is_flagged`.)
+
+6. **Generate the answer.** We stuff the retrieved chunks into a prompt and call
+   `client.chat.completions.create(...)` -- the familiar OpenAI-shaped chat API, but the `model`
+   string (`provider/model`) picks *which provider* answers. (See `meshapi_client.ask` and
+   `rag.answer`.)
+
+7. **Speech in and out (optional).**
+   - **Speech-to-text:** `client.audio.transcribe(...)` turns a recorded question into text.
+   - **Text-to-speech:** `client.audio.synthesize(...)` turns the answer into audio.
+   (See `meshapi_client.transcribe` / `meshapi_client.synthesize`.)
+
+**One real gotcha:** MeshAPI's `/v1/files` store is **account-wide** -- every file ever uploaded
+with your key lands in the same searchable pool, and there's no delete endpoint. So the app records
+the `file_id`s from its own `ingest()` in a small local `.rag_state.json` and always passes them to
+`search(..., file_ids=...)`, keeping results scoped to just its own data.
+
+---
+
+## Setup
+
+### 1. Prerequisites
+- Python 3.10+ (the app uses `str | None` union syntax)
+- A **MeshAPI API key** from the [MeshAPI dashboard](https://developers.meshapi.ai) -> API Keys.
+  This single key powers chat, embeddings, RAG, moderation, STT, and TTS -- nothing else needed.
+
+### 2. Create a virtual environment and install dependencies
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate      # Windows
+# source .venv/bin/activate # macOS / Linux
 pip install -r requirements.txt
-copy .env.example .env      # then fill in your keys
 ```
 
-### Run
+### 3. Configure your environment
 
 ```bash
-uvicorn app.main:app --reload
+copy .env.example .env      # Windows  (cp .env.example .env on macOS/Linux)
 ```
 
-Open `http://127.0.0.1:8000`, then index the sample knowledge base once:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/ingest
-```
-
-After that, ask questions from the web UI, or hit the JSON API directly:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/ask \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What happens if I go over my storage limit?"}'
-```
-
-### Environment variables
-
-See `.env.example` for the full list. You'll need:
-- A MeshAPI key (`MESH_API_KEY`) from the [MeshAPI dashboard](https://developers.meshapi.ai) — used for both chat and embeddings
-- A Pinecone key (`PINECONE_API_KEY`) from [pinecone.io](https://www.pinecone.io)
-
-## Native RAG app (`native_rag_app/`)
-
-Same idea, retrieval rebuilt on MeshAPI's own managed RAG service instead of Pinecone, plus voice
-input/output:
+Then edit `.env` and set your key:
 
 ```
-native_rag_app/
-  config.py          settings loaded from environment variables
-  data.py               sample knowledge base (no chunking code -- MeshAPI chunks server-side)
-  meshapi_client.py   MeshAPI gateway client (chat, RAG upload/search, TTS, STT)
-  rag.py                 ingest / retrieve / answer orchestration
-  schemas.py           request/response models
-  main.py               FastAPI routes, incl. voice endpoints
-  templates/index.html   single-page UI: type or 🎤 speak a question, hear the answer read back
-  static/app.js           mic recording (MediaRecorder) + fetch calls to the JSON API
-  static/style.css
+MESH_API_KEY=rsk_your_meshapi_key_here
+MESHAPI_BASE_URL=https://api.meshapi.ai
+MESHAPI_CHAT_MODEL=openai/gpt-4o-mini      # any provider/model MeshAPI routes to
+RAG_TOP_K=3
+# Voice (optional overrides)
+MESHAPI_TTS_MODEL=hexgrad/kokoro-82m
+MESHAPI_TTS_VOICE=af_heart
+MESHAPI_STT_MODEL=elevenlabs/scribe_v1
 ```
 
-### Setup & run
+(The `.env.example` also lists Pinecone variables -- you can ignore those; the native RAG app does
+not use Pinecone.)
 
-Uses the same `.env` / `requirements.txt` as `app/` — no Pinecone key needed for this one. Only
-addition: `python-multipart` is already in `requirements.txt` (needed for the voice upload endpoint).
+---
+
+## Running the native RAG app
 
 ```bash
 uvicorn native_rag_app.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000`, click **"Index knowledge base"** once, then type a question or click
-🎤 and ask out loud. Or hit the JSON API directly:
+Open **http://127.0.0.1:8000**, click **"Index knowledge base"** once to upload and embed the
+sample docs, then type a question or click the mic and ask out loud.
+
+### Or use the JSON API directly
 
 ```bash
+# Upload + embed the sample knowledge base (do this once)
 curl -X POST http://127.0.0.1:8000/api/ingest
+
+# Ask a question (add "speak": true to also get audio back)
 curl -X POST http://127.0.0.1:8000/api/ask \
   -H "Content-Type: application/json" \
   -d '{"question": "What happens if I go over my storage limit?", "speak": true}'
 ```
 
-`speak: true` (or any `/api/ask-voice` call) returns a base64 mp3 in `audio_base64` alongside the
-text answer.
+`speak: true` (and every `/api/ask-voice` call) returns a base64-encoded audio clip in
+`audio_base64` alongside the text answer.
 
-## Comparing the two RAG apps
+---
 
-| | `app/` (Pinecone) | `native_rag_app/` (MeshAPI RAG) |
-|---|---|---|
-| Chunking | Ours (`data.chunk_text`, fixed char window + overlap) | MeshAPI's, automatic on upload — we don't control the strategy |
-| Embedding | Explicit `meshapi_client.embed()` call we wire into the ingest step | Implicit — happens server-side after `upload_file(embed=True)` |
-| Storage | Our own Pinecone index (`PINECONE_INDEX_NAME`), scoped to us by construction | One shared store per MeshAPI API key — see gotcha below |
-| Retrieval code | `vectorstore.py` (a whole module: index create/upsert/query) | One `client.rag.search(...)` call, no separate module |
-| Extra infra/credentials | Needs a Pinecone account + API key | None — same MeshAPI key does everything |
-| Voice in/out | Not built | Built — STT question in, TTS answer out |
+## Where to go next
 
-**The one real gotcha we hit building the MeshAPI-native version:** `/v1/files` has no delete
-endpoint (confirmed live — `DELETE /v1/files/{id}` returns `405 Method Not Allowed`), and uploads
-aren't scoped to an "index" the way Pinecone's are — every file ever uploaded with a given API key
-lands in the same account-wide searchable pool, forever. Re-running ingest, or just having used the
-same key for other testing, means `client.rag.search(...)` can return stale or unrelated documents
-mixed in with yours. The fix `native_rag_app/rag.py` uses: track the `file_id`s from your own
-`ingest()` call in a small local state file and always pass them to `SearchRequest(..., file_ids=...)`
-to scope search to just your own data. (`SearchRequest` also has a `filter` param for metadata
-filtering, but it errored server-side in testing — `file_ids` is the reliable option.)
-
-**Bottom line:** the MeshAPI-native app is meaningfully less code and needs one less service
-(Pinecone) — but you trade away control over chunking strategy and inherit the shared-store gotcha
-above. Pinecone remains the better choice if you need your own chunking logic, multiple isolated
-indexes, or guaranteed deletion.
+- Read **[`docs/README.md`](docs/README.md)** for the full documentation index.
+- Open the notebooks in **`experiments/`** to see each MeshAPI feature run live.
+- Study **`native_rag_app/`** to see how a real, complete app is wired together end to end.

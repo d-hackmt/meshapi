@@ -20,9 +20,8 @@ flowchart LR
     TTS --> You
 ```
 
-The headline difference from the other RAG app (`app/`, which uses Pinecone): **there's no vector
-database here at all.** MeshAPI stores, chunks, and searches your documents itself — you just upload
-and search.
+The headline feature: **there's no vector database here at all.** MeshAPI stores, chunks, and
+searches your documents itself — you just upload and search.
 
 ## What's in the folder
 
@@ -45,9 +44,9 @@ flowchart LR
     App -->|"that's the only one"| Done["Everything: chat, RAG,\nvoice in, voice out"]
 ```
 
-Just **one** — `MESH_API_KEY` in your `.env`. Unlike `app/` (the Pinecone version), there's no
-second service to sign up for. A few optional variables let you override defaults if you want a
-different chat model or voice — see `.env.example` — but nothing else is required.
+Just **one** — `MESH_API_KEY` in your `.env`. No second service to sign up for, no vector database
+account. A few optional variables let you override defaults if you want a different chat model or
+voice — see `.env.example` — but nothing else is required.
 
 ## How to run it
 
@@ -110,10 +109,9 @@ small local file (`.rag_state.json`, gitignored). Every search is then scoped to
 - **Moderation**: a normal question passes through; an unsafe one is blocked with `HTTP 400` before
   reaching the model
 
-## `app/` (Pinecone) or `native_rag_app/` — which one for a demo?
+## Why this design for a demo
 
-Short answer: **`native_rag_app` for live demos** (one credential, voice is a strong wow-factor,
-less code to explain, now has moderation too). **`app/` for teaching RAG architecture** — it's the
-one that actually shows chunking, embeddings, and a vector index, which is the transferable lesson
-if students build RAG on a different stack later. Full comparison table in the main
-[`README.md`](../README.md#comparing-the-two-rag-apps).
+One credential, voice is a strong wow-factor, and there's less code to explain than a
+chunking/embedding/vector-index pipeline — good reasons this is "the" RAG app going forward, not one
+of two options. The tradeoff to know: you don't control chunking strategy, since MeshAPI handles it
+server-side (see the gotcha above for the other thing that comes with that).
