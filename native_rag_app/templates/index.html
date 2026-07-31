@@ -1,3 +1,4 @@
+<!-- Build order: 07/09 -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,6 +9,7 @@
 </head>
 <body>
   <main>
+    <!-- Header: what this demo is -->
     <header>
       <h1>Nimbus Cloud Support Assistant</h1>
       <p class="subtitle">
@@ -17,12 +19,14 @@
       </p>
     </header>
 
+    <!-- One-time setup: upload + embed the sample knowledge base -->
     <p class="ingest-hint">
       First time running this? Index the sample knowledge base once:
       <button id="ingest-btn" type="button">Index knowledge base</button>
       <span id="ingest-status"></span>
     </p>
 
+    <!-- Ask form: type a question, submit, or use the mic button for voice -->
     <form id="ask-form" class="ask-form">
       <input
         id="question-input"
@@ -35,20 +39,24 @@
       <button id="mic-btn" type="button" title="Ask by voice">🎤</button>
     </form>
 
+    <!-- Toggle whether the answer is also read back aloud -->
     <label class="speak-toggle">
       <input type="checkbox" id="speak-toggle" checked>
       speak the answer back
     </label>
 
+    <!-- Live status line (thinking / listening / errors) -->
     <p id="status" class="status"></p>
 
+    <!-- Answer area, hidden until the first response arrives -->
     <section id="answer-section" class="answer" hidden>
       <h2>Answer</h2>
-      <p id="answer-question" class="heard"></p>
+      <p id="answer-question" class="heard"></p>   <!-- echoes the (possibly spoken) question -->
       <p id="answer-text"></p>
-      <audio id="answer-audio" controls hidden></audio>
+      <audio id="answer-audio" controls hidden></audio>   <!-- spoken answer playback -->
     </section>
 
+    <!-- Source chunks the answer was grounded in -->
     <section id="sources-section" class="sources" hidden>
       <h2>Sources</h2>
       <ul id="sources-list"></ul>

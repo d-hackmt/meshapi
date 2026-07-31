@@ -1,3 +1,19 @@
+"""Build order: 02/09.
+
+Sample knowledge base for the RAG demo.
+
+This is the corpus the assistant answers from -- a small set of fictional
+"Nimbus Cloud" support documents. Note what is *not* here: there is no chunking,
+tokenizing or embedding code. In the MeshAPI-native design we upload each of
+these documents as-is (see rag.ingest) and MeshAPI's managed RAG store chunks
+and embeds them server-side. Each entry just needs an id, a human-readable title,
+and the raw text; the title/id ride along as metadata so retrieved chunks can be
+attributed back to their source document.
+"""
+
+# List of documents fed to MeshAPI's RAG store. `id` becomes the upload's
+# filename stem and metadata `doc_id`; `title` is shown as the source label in
+# the UI; `text` is the actual content that gets chunked + embedded server-side.
 KNOWLEDGE_BASE = [
     {
         "id": "doc-1",
