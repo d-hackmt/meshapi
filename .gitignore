@@ -1,4 +1,5 @@
 .env
+.mcp.json
 native_rag_app/.rag_state.json
 __pycache__/
 *.pyc
