@@ -23,9 +23,8 @@ meshapi/
   .env.example       Template for your environment variables
 ```
 
-*(There's also an `app/` folder from an earlier Pinecone-based version of this RAG app, plus its own
-`static/`/`templates/` at the repo root -- both are being retired in favor of `native_rag_app/` and
-not part of the current tour.)*
+*(An earlier Pinecone-based version of this RAG app, `app/`, plus its own root-level
+`static/`/`templates/`, has been removed -- `native_rag_app/` replaced it entirely.)*
 
 ### `native_rag_app/` -- the star of the repo
 
