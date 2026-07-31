@@ -5,11 +5,16 @@ from pinecone import Pinecone, ServerlessSpec
 from .config import settings
 
 _pc = Pinecone(api_key=settings.pinecone_api_key)
+_index = None
 
 
 def get_index():
-    existing = [idx["name"] for idx in _pc.list_indexes()]
-    if settings.pinecone_index_name not in existing:
+    """Cached after first call -- avoids re-listing/re-describing the index on every upsert/query."""
+    global _index
+    if _index is not None:
+        return _index
+
+    if settings.pinecone_index_name not in [idx["name"] for idx in _pc.list_indexes()]:
         _pc.create_index(
             name=settings.pinecone_index_name,
             dimension=settings.embedding_dimensions,
@@ -18,7 +23,9 @@ def get_index():
         )
         while not _pc.describe_index(settings.pinecone_index_name).status["ready"]:
             time.sleep(1)
-    return _pc.Index(settings.pinecone_index_name)
+
+    _index = _pc.Index(settings.pinecone_index_name)
+    return _index
 
 
 def upsert_chunks(vectors: list[dict]) -> None:
