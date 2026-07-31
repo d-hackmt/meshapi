@@ -23,6 +23,46 @@ flowchart LR
 The headline feature: **there's no vector database here at all.** MeshAPI stores, chunks, and
 searches your documents itself — you just upload and search.
 
+## What actually chunks, embeds, and stores your documents?
+
+Short, honest answer: **MeshAPI does, and it's a black box** — checked their official docs directly
+for this, and none of the following is publicly disclosed:
+
+- **Chunking strategy or chunk size** — not published. The docs only say files are "automatically
+  convert[ed] into searchable chunks."
+- **Which embedding model** — not published. (Different from the standalone `/v1/embeddings`
+  endpoint elsewhere in this repo, where *you* pick the model — the managed RAG store's embedding
+  step is internal and fixed.)
+- **Which vector database** — not published at all; the docs describe the API, not the infrastructure
+  behind it.
+
+```mermaid
+flowchart LR
+    subgraph Known["What we can see"]
+        A["file upload"] --> B["embedding_status:\nqueued -> processing -> ready"]
+        B --> C["search results have\na chunk_index + score"]
+        C --> D["file status shows\ntotal_tokens billed"]
+    end
+    subgraph Unknown["What's not disclosed"]
+        E["exact chunking algorithm"]
+        F["which embedding model"]
+        G["which vector database"]
+    end
+    Known -.->|"opaque boundary"| Unknown
+```
+
+What **is** observable, from the SDK's response fields and from testing live: each search result
+carries a `chunk_index` (so chunking definitely happens), and each uploaded file's status shows
+`total_tokens` / `total_cost_usd` once embedded (so token-based billing on an embedding model
+definitely happens) — but neither field says which chunk size or which model. One concrete data
+point from testing: a single ~1,500-character document came back as **exactly one chunk**, no matter
+how many paragraphs it had — so whatever size threshold triggers a split, it's larger than that.
+
+If you need to control chunking strategy yourself (fixed window, semantic splitting, a specific
+embedding model, a specific vector DB), that's exactly the tradeoff of using a managed store like
+this one — the deleted `app/` (Pinecone) version of this demo was the alternative that gave you that
+control, at the cost of writing the chunk/embed/upsert code yourself.
+
 ## What's in the folder
 
 | File | What it does |
