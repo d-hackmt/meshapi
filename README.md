@@ -25,6 +25,9 @@ OpenAI-shaped API, many LLM providers behind it.
 - **`cli_and_claude_code.md`** — how to use `meshapi-code` (MeshAPI's own terminal coding agent,
   `uv tool install meshapi-code`) and how to add MeshAPI as an MCP tool inside Claude Code itself —
   two separate, unrelated integrations, both covered with verified install/config details.
+- **`mcp_capabilities.md`** — `meshapi-code` vs the MCP server compared side by side (a whole separate
+  agent vs. extra tools for Claude Code), what MCP can and can't do (no audio/video/batch — verified
+  live), and real generate-image/video/TTS examples run through each.
 
 ## FastAPI RAG app
 
