@@ -17,6 +17,14 @@ function setStatus(msg) {
   statusEl.textContent = msg;
 }
 
+function errorMessage(err) {
+  try {
+    return JSON.parse(err.message).detail || err.message;
+  } catch {
+    return err.message || "Something went wrong.";
+  }
+}
+
 function renderAnswer({ question, answer, sources, audio_base64 }) {
   answerQuestion.textContent = question ? `you asked: "${question}"` : "";
   answerQuestion.hidden = !question;
@@ -84,7 +92,7 @@ askForm.addEventListener("submit", async (e) => {
     renderAnswer({ question, answer: data.answer, sources: data.sources, audio_base64: data.audio_base64 });
     setStatus("");
   } catch (err) {
-    setStatus("Something went wrong — see console.");
+    setStatus(errorMessage(err));
     console.error(err);
   }
 });
@@ -134,7 +142,7 @@ async function sendVoiceQuestion(blob) {
     renderAnswer(data);
     setStatus("");
   } catch (err) {
-    setStatus("Something went wrong — see console.");
+    setStatus(errorMessage(err));
     console.error(err);
   }
 }

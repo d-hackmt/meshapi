@@ -36,6 +36,9 @@ def api_ingest() -> IngestResponse:
 
 @app.post("/api/ask", response_model=AskResponse)
 def api_ask(req: AskRequest) -> AskResponse:
+    if meshapi_client.is_flagged(req.question):
+        raise HTTPException(400, "That question was flagged by content moderation -- try rephrasing.")
+
     answer_text, sources = rag.answer(req.question, top_k=req.top_k)
     audio_b64 = base64.b64encode(meshapi_client.synthesize(answer_text)).decode() if req.speak else None
     return AskResponse(answer=answer_text, sources=sources, audio_base64=audio_b64)
@@ -47,6 +50,8 @@ async def api_ask_voice(audio: UploadFile = File(...)) -> VoiceAskResponse:
     question = meshapi_client.transcribe(audio_bytes, filename=audio.filename or "recording.webm")
     if not question.strip():
         raise HTTPException(400, "Could not make out any speech in that recording -- try again.")
+    if meshapi_client.is_flagged(question):
+        raise HTTPException(400, "That question was flagged by content moderation -- try rephrasing.")
 
     answer_text, sources = rag.answer(question)
     audio_b64 = base64.b64encode(meshapi_client.synthesize(answer_text)).decode()
