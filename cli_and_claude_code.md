@@ -48,6 +48,26 @@ Installed 1 executable: meshapi
 If `uv` warns that its tool bin directory isn't on your `PATH` yet, run `uv tool update-shell` once
 and restart your terminal.
 
+**Gotcha hit while testing this on Windows:** `uv tool update-shell` writes the PATH change
+permanently, but any `cmd.exe` window that was *already open* keeps its old environment snapshot —
+`meshapi --version` will still say `'meshapi' is not recognized` until you open a **brand new**
+window. Fastest fix without restarting: `set PATH=%USERPROFILE%\.local\bin;%PATH%` in the current
+window. Also, `meshapi` is invoked directly, not through `uv` — `uv meshapi --version` is wrong
+(`uv` doesn't know a `meshapi` subcommand); just run `meshapi --version`.
+
+### First run, step by step (Windows `cmd.exe`)
+
+```cmd
+cd /d D:\meshapi
+set MESH_API_KEY=rsk_your_key_here
+meshapi
+```
+
+That drops you into an interactive chat. Type a question or instruction and hit enter — e.g.
+`explain what app/rag.py does`. `set MESH_API_KEY=...` only lasts for that terminal session; run
+`/login` once inside `meshapi` instead if you want the key remembered permanently (see
+Authentication above).
+
 ### Authentication
 
 Checked the installed source directly (`meshapi/config.py`) rather than guessing. Key resolution
@@ -97,6 +117,37 @@ Also available as CLI flags at launch, so you don't need to set them every sessi
 ```bash
 meshapi --model openai/gpt-4o-mini --route auto --mode accept-edits
 ```
+
+### Changing models
+
+Three ways, pick whichever fits:
+
+1. **Mid-session, know the name:**
+   ```
+   /model openai/gpt-4o-mini
+   /model anthropic/claude-sonnet-4.5
+   /model mistral/mistral-large-3-675b-instruct
+   ```
+   Takes effect immediately — your next message goes to the new model.
+
+2. **Mid-session, don't know the exact name:** browse first, then switch.
+   ```
+   /models
+   /models claude
+   /models free
+   ```
+   Lists id, context length, and $/1M token pricing. `/models free` shows only the free-tier models
+   (handy for testing without spending anything). Copy the `id` you want into `/model <id>`.
+
+3. **At launch**, so you don't need the in-session step at all:
+   ```cmd
+   meshapi --model openai/gpt-4o-mini
+   ```
+
+**Don't want to pick manually?** `/route auto` (or `--route auto` at launch) hands model selection
+to MeshAPI's own router — it picks a model per-prompt based on what you're asking, no fixed model at
+all. `/route off` goes back to a fixed model; `/route preview` shows what the router *would* pick
+without committing to it.
 
 ### Permission modes
 
