@@ -238,6 +238,14 @@ Things that only showed up by executing real code against a real key, not from r
 - The `X-Mesh-Routing-Attempts`/`X-Mesh-Routing-Fallback` headers and `usage.classifier_tokens` (on
   auto-routed responses) aren't always present — they showed up in some runs and not others, so
   treat them as present-when-relevant rather than guaranteed on every response.
+- **`model_type == "embedding"` is the wrong filter for finding embedding-capable models** — confirmed
+  live. It's a separate, smaller bucket (30 models) that doesn't even include the model this repo
+  actually uses (`openai/text-embedding-3-small`, which is `model_type="text"`). The correct signal is
+  the `supports_embeddings` boolean, which any model can carry regardless of its primary `model_type`
+  — filtering on it returns all 44 embedding models, this one included. The catalog's `model_type` also
+  confirmed useful buckets for the other content types: `image` (197), `video` (200), `tts` (40),
+  `stt` (17, covers both transcription and translation models) — those five are reliable to filter on
+  directly, only embeddings need the boolean instead.
 
 ---
 

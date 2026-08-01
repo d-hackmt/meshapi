@@ -17,4 +17,5 @@ flowchart LR
 | 05 | [`05_meshapi_vs_claude_code.md`](05_meshapi_vs_claude_code.md) | `meshapi-code` vs Claude Code as products — how each is actually built, not just what commands they have. |
 | 06 | [`06_native_rag_app.md`](06_native_rag_app.md) | `native_rag_app/` explained — architecture, env keys, endpoints, the account-wide-RAG-store gotcha and its fix, moderation, and confirmed-live test results. |
 
-The changelog (`progress_summary.md`) now lives at the repo root, not here.
+There's no tracked changelog file in this repo — session-to-session progress notes are kept locally
+and untracked rather than committed.

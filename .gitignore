@@ -9,3 +9,4 @@ env/
 .ipynb_checkpoints/
 *.egg-info/
 .pytest_cache/
+progresss_summary.md

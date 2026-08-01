@@ -19,7 +19,6 @@ meshapi/
   experiments/       Jupyter notebooks -- the guided feature tour
   docs/              Ordered, plain-language documentation (read docs/README.md first)
   outputs/           Generated media (images, speech, video) produced by the notebooks
-  progress_summary.md   Changelog of work done in this repo
   requirements.txt   Python dependencies
   .env.example       Template for your environment variables
 ```
@@ -60,21 +59,35 @@ native_rag_app/
 
 ### `experiments/` -- the notebooks
 
-- **`01_meshapi_basics.ipynb`** -- gateway fundamentals: client setup, live model discovery, chat
-  completions across multiple providers, streaming, and the `compare` endpoint.
-- **`02_rag_multiagent.ipynb`** -- a RAG + multi-agent capstone (Researcher -> Writer -> Critic),
-  each agent routed through a different provider via MeshAPI.
-- **`features.ipynb`** / **`features_lazy_imports.ipynb`** -- the full feature tour. Same cells and
-  live outputs; the `_lazy_imports` copy imports each SDK class right where it's first used so any
-  section reads on its own.
+Each notebook has two versions: the original, and a `_lazy_imports` copy where every SDK class is
+imported right where it's first used (instead of one big block up front) so any single cell or
+section reads standalone. The recommended teaching order is **01 -> 02 -> features**, each one
+building on exactly what the last one taught, with no topic repeated twice:
+
+- **`01_meshapi_basics.ipynb`** / **`01_meshapi_basics_lazy_imports.ipynb`** -- the bare minimum:
+  open a client, one chat completion, close the client. That's it -- streaming, `compare`, model
+  discovery, and everything else used to live here too, but now live only in `features.ipynb` so
+  they're taught exactly once. *(Use the `_lazy_imports` copy if you're teaching from this repo --
+  it's the simplified version described above; the original `01_meshapi_basics.ipynb` still has the
+  fuller original content.)*
+- **`02_rag_multiagent.ipynb`** / **`02_rag_multiagent_lazy_imports.ipynb`** -- a RAG + multi-agent
+  capstone (Researcher -> Writer -> Critic), each agent routed through a different provider via
+  MeshAPI. Picks up right after `01`'s bare-minimum client, and introduces model discovery,
+  embeddings, Pinecone, and LangChain's `create_agent` itself, in small steps. The `_lazy_imports`
+  copy also splits the original's larger cells into smaller ones (one idea per cell) for a smoother
+  live-coding pace.
+- **`features.ipynb`** / **`features_lazy_imports.ipynb`** -- the full feature tour: everything `01`
+  used to cover (streaming, `compare`, model discovery, error handling) plus tool calling, structured
+  outputs, the Responses API, Auto Router, and every other MeshAPI capability (RAG, memory, images,
+  video, audio, moderation, caching, batch, templates, web search, accounts, dev tooling). Same cells
+  and live outputs either way; the `_lazy_imports` copy is the import-per-section version.
 
 ### `docs/` -- the written guides
 
 Start with **[`docs/README.md`](docs/README.md)**, which orders everything. In short:
 `01_research.md` (feature inventory) -> `02_features.md` (notebook walkthrough) ->
 `03_cli_and_claude_code.md` + `04_mcp_capabilities.md` + `05_meshapi_vs_claude_code.md` (tooling and
-comparisons) -> `06_native_rag_app.md` (the app itself). The changelog now lives at the repo root:
-**[`progress_summary.md`](progress_summary.md)**.
+comparisons) -> `06_native_rag_app.md` (the app itself).
 
 ---
 

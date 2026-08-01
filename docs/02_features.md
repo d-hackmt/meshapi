@@ -4,6 +4,13 @@ A guide to `features.ipynb`, in plain words. That notebook walks through every f
 offers, one at a time, and actually runs each one against a live key. This file explains what each
 section does and why it matters, without needing to open Jupyter.
 
+**Recommended order:** `01_meshapi_basics_lazy_imports.ipynb` (client + one chat call, nothing else)
+→ `02_rag_multiagent_lazy_imports.ipynb` (RAG + multi-agent, introduces model discovery for real) →
+`features.ipynb` / `features_lazy_imports.ipynb` (this one — everything else, no topic repeated
+twice). The `_lazy_imports` copies import each SDK class at its first point of use instead of one
+big upfront block, and additionally show *how* a model is picked (not just that one is hardcoded)
+for embeddings, images, video, TTS, and STT.
+
 ---
 
 ## Env keys you need
@@ -91,7 +98,7 @@ flowchart LR
 
 | Feature | In plain words |
 |---|---|
-| **Embeddings** | Turns text into a list of numbers (a "vector") that captures its meaning — used for search/similarity. |
+| **Embeddings** | Turns text into a list of numbers (a "vector") that captures its meaning — used for search/similarity. Picking a model for this has a gotcha: filter on the `supports_embeddings` flag, not `model_type == "embedding"` (a different, smaller bucket that doesn't include the model actually used here) — see [`01_research.md` §6.1](01_research.md) for the live-verified details. |
 | **Built-in RAG** | Upload a document, MeshAPI chunks it, embeds it, and stores it for you — then you can search it. No separate vector database needed. |
 | **Memory** | This is what MeshAPI actually calls a "guardrail" — a rule you save once (e.g. "never give financial advice") that gets automatically included in every future chat call. Not a content-safety filter (that's Moderations, below). |
 
