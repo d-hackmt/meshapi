@@ -219,8 +219,9 @@ Things that only showed up by executing real code against a real key, not from r
   other resource in the SDK. Access via `r.output[0]["content"][0]["text"]`, not attribute access.
 - **`client.models.list(provider="mistral")` returns 0 results** even though Mistral models exist —
   most catalog entries have `provider: null` server-side; filter the full list client-side by id
-  prefix or `.brand` instead (see section 3.1's note, and `01_meshapi_basics.ipynb`/
-  `02_rag_multiagent.ipynb` for the working pattern).
+  prefix or `.brand` instead (see section 3.1's note, and `experiments/old_experiments/01_meshapi_basics.ipynb`/
+  `02_rag_multiagent.ipynb`, or their current `experiments/*_lazy_imports.ipynb` counterparts, for the
+  working pattern).
 - **TTS needs the full `provider/model` id**, not a bare model name (`hexgrad/kokoro-82m`, not
   `kokoro-82m`) — and **ElevenLabs models specifically require an explicit `voice` param**, or the
   call fails with a 422.

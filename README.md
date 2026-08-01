@@ -59,28 +59,27 @@ native_rag_app/
 
 ### `experiments/` -- the notebooks
 
-Each notebook has two versions: the original, and a `_lazy_imports` copy where every SDK class is
-imported right where it's first used (instead of one big block up front) so any single cell or
-section reads standalone. The recommended teaching order is **01 -> 02 -> features**, each one
-building on exactly what the last one taught, with no topic repeated twice:
+The notebooks you actually run live directly in `experiments/`; the original, pre-simplification
+versions of `01` and `02` are kept in **`experiments/old_experiments/`** for reference (not deleted,
+just out of the way). The recommended teaching order is **01 -> 02 -> features**, each one building
+on exactly what the last one taught, with no topic repeated twice:
 
-- **`01_meshapi_basics.ipynb`** / **`01_meshapi_basics_lazy_imports.ipynb`** -- the bare minimum:
-  open a client, one chat completion, close the client. That's it -- streaming, `compare`, model
-  discovery, and everything else used to live here too, but now live only in `features.ipynb` so
-  they're taught exactly once. *(Use the `_lazy_imports` copy if you're teaching from this repo --
-  it's the simplified version described above; the original `01_meshapi_basics.ipynb` still has the
-  fuller original content.)*
-- **`02_rag_multiagent.ipynb`** / **`02_rag_multiagent_lazy_imports.ipynb`** -- a RAG + multi-agent
-  capstone (Researcher -> Writer -> Critic), each agent routed through a different provider via
-  MeshAPI. Picks up right after `01`'s bare-minimum client, and introduces model discovery,
-  embeddings, Pinecone, and LangChain's `create_agent` itself, in small steps. The `_lazy_imports`
-  copy also splits the original's larger cells into smaller ones (one idea per cell) for a smoother
-  live-coding pace.
-- **`features.ipynb`** / **`features_lazy_imports.ipynb`** -- the full feature tour: everything `01`
+- **`01_meshapi_basics_lazy_imports.ipynb`** -- the bare minimum: open a client, one chat completion,
+  check what it cost, close the client. That's it -- streaming, `compare`, model discovery, and
+  everything else used to live here too (see `old_experiments/01_meshapi_basics.ipynb`), but now live
+  only in `features_lazy_imports.ipynb` so they're taught exactly once.
+- **`02_rag_multiagent_lazy_imports.ipynb`** -- a RAG + multi-agent capstone (Researcher -> Writer ->
+  Critic), each agent routed through a different provider via MeshAPI. Picks up right after `01`'s
+  bare-minimum client, and introduces model discovery, embeddings, Pinecone, and LangChain's
+  `create_agent` itself, in small steps -- split into smaller single-purpose cells than the original
+  in `old_experiments/02_rag_multiagent.ipynb` for a smoother live-coding pace.
+- **`features_lazy_imports.ipynb`** -- the full feature tour: everything `01`
   used to cover (streaming, `compare`, model discovery, error handling) plus tool calling, structured
   outputs, the Responses API, Auto Router, and every other MeshAPI capability (RAG, memory, images,
-  video, audio, moderation, caching, batch, templates, web search, accounts, dev tooling). Same cells
-  and live outputs either way; the `_lazy_imports` copy is the import-per-section version.
+  video, audio, moderation, caching, batch, templates, web search, accounts, dev tooling). *(The
+  original `features.ipynb` this was copied from didn't survive an earlier repo reorg -- it's absent
+  from disk, though still recoverable from git history if needed. `features_lazy_imports.ipynb` is
+  the complete, current version.)*
 
 ### `docs/` -- the written guides
 

@@ -25,7 +25,7 @@ flowchart LR
 |---|---|---|
 | `MESH_API_KEY` (or `MESHAPI_TOKEN`) | **Yes** | Every single cell in the notebook |
 | `MESHAPI_BASE_URL` | No — defaults to `https://api.meshapi.ai` | Same as above |
-| Pinecone / Jina keys | **Not needed here** | Only used in `02_rag_multiagent.ipynb`, which builds its own RAG stack. `features.ipynb` uses MeshAPI's own built-in RAG instead, so it doesn't need them. |
+| Pinecone / Jina keys | **Not needed here** | Only used in `02_rag_multiagent_lazy_imports.ipynb` (original: `experiments/old_experiments/02_rag_multiagent.ipynb`), which builds its own RAG stack. `features.ipynb` uses MeshAPI's own built-in RAG instead, so it doesn't need them. |
 
 The notebook reads `.env` automatically (`load_dotenv()`), or falls back to a `getpass()` prompt if
 the key isn't set. One key, every feature — that's the whole point of a gateway.
