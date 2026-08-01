@@ -12,7 +12,6 @@ All the actual work lives in rag.py / meshapi_client.py; these handlers just
 validate input, call into them, and shape the response.
 """
 
-import base64
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
@@ -33,6 +32,12 @@ app = FastAPI(title="MeshAPI Native RAG Demo")
 # Serve JS/CSS from /static and render index.html via Jinja from /templates.
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
+
+
+def _reject_if_flagged(question: str) -> None:
+    """Raise a 400 if MeshAPI's moderation endpoint flags this question."""
+    if meshapi_client.is_flagged(question):
+        raise HTTPException(400, "That question was flagged by content moderation -- try rephrasing.")
 
 
 @app.on_event("startup")
@@ -58,13 +63,12 @@ def api_ingest() -> IngestResponse:
 def api_ask(req: AskRequest) -> AskResponse:
     """Answer a typed question, optionally returning spoken audio too."""
     # Screen the question with moderation before spending a chat call on it.
-    if meshapi_client.is_flagged(req.question):
-        raise HTTPException(400, "That question was flagged by content moderation -- try rephrasing.")
+    _reject_if_flagged(req.question)
 
     # Retrieve + generate the grounded answer.
     answer_text, sources = rag.answer(req.question, top_k=req.top_k)
     # Only synthesize speech when the client asked for it (speak=True).
-    audio_b64 = base64.b64encode(meshapi_client.synthesize(answer_text)).decode() if req.speak else None
+    audio_b64 = meshapi_client.synthesize_base64(answer_text) if req.speak else None
     return AskResponse(answer=answer_text, sources=sources, audio_base64=audio_b64)
 
 
@@ -77,11 +81,10 @@ async def api_ask_voice(audio: UploadFile = File(...)) -> VoiceAskResponse:
     if not question.strip():
         raise HTTPException(400, "Could not make out any speech in that recording -- try again.")
     # 2. Moderate the transcribed question.
-    if meshapi_client.is_flagged(question):
-        raise HTTPException(400, "That question was flagged by content moderation -- try rephrasing.")
+    _reject_if_flagged(question)
 
     # 3. Retrieve + generate the answer, then 4. always read it back as audio.
     answer_text, sources = rag.answer(question)
-    audio_b64 = base64.b64encode(meshapi_client.synthesize(answer_text)).decode()
+    audio_b64 = meshapi_client.synthesize_base64(answer_text)
     # Echo the transcribed question back so the UI can show what it heard.
     return VoiceAskResponse(question=question, answer=answer_text, sources=sources, audio_base64=audio_b64)

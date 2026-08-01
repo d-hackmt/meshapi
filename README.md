@@ -130,7 +130,7 @@ flowchart LR
 7. **Speech in and out (optional).**
    - **Speech-to-text:** `client.audio.transcribe(...)` turns a recorded question into text.
    - **Text-to-speech:** `client.audio.synthesize(...)` turns the answer into audio.
-   (See `meshapi_client.transcribe` / `meshapi_client.synthesize`.)
+   (See `meshapi_client.transcribe` / `meshapi_client.synthesize_base64`.)
 
 **One real gotcha:** MeshAPI's `/v1/files` store is **account-wide** -- every file ever uploaded
 with your key lands in the same searchable pool, and there's no delete endpoint. So the app records

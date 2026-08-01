@@ -10,6 +10,8 @@ key. This module keeps all direct SDK usage in one place so the rest of the app
 of the raw SDK.
 """
 
+import base64
+
 from meshapi import ChatCompletionParams, ChatMessage, MeshAPI, ModerationParams, SearchRequest, SpeechParams, TranscriptionParams
 
 from .config import settings
@@ -95,12 +97,13 @@ def transcribe(audio_bytes: bytes, filename: str = "recording.webm") -> str:
     return transcript.text
 
 
-def synthesize(text: str) -> bytes:
-    """Text-to-speech: turn an answer string into audio bytes (an mp3).
+def synthesize_base64(text: str) -> str:
+    """Text-to-speech: turn an answer string into a base64-encoded mp3.
 
-    `stream=False` returns the whole clip at once so the caller can base64-encode
-    it and hand it back in a single JSON response.
+    Base64-encoded here (not raw bytes) since every caller just hands the result
+    straight into a JSON response body.
     """
-    return _client.audio.synthesize(
+    audio_bytes = _client.audio.synthesize(
         SpeechParams(input=text, model=settings.tts_model, voice=settings.tts_voice, stream=False)
     )
+    return base64.b64encode(audio_bytes).decode()
