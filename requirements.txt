@@ -1,8 +1,16 @@
-fastapi
-uvicorn[standard]
-jinja2
-python-multipart
-python-dotenv
-meshapi
-pydantic
-requests 
+# native_rag_app
+fastapi==0.141.1
+uvicorn[standard]==0.52.0
+jinja2==3.1.6
+python-multipart==0.0.32
+python-dotenv==1.2.2
+meshapi==0.1.11
+pydantic==2.13.4
+requests==2.34.2
+
+# experiments/02_rag_multiagent(_lazy_imports).ipynb -- RAG + multi-agent capstone
+langchain==1.3.14
+langchain-openai==1.4.1
+langchain-core==1.5.3
+langchain-community==0.4.2
+pinecone==9.1.0
