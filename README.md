@@ -1,5 +1,7 @@
 # Welcome to the MeshAPI Implementation Repository
 
+📺 **[Learn MeshAPI on my YouTube — MeshAPI Crash Course](https://www.youtube.com/watch?v=LsWr1ehbLOE&t=4564s)**
+
 Welcome! This repository is a hands-on tour of **[MeshAPI](https://developers.meshapi.ai)** -- an
 AI model gateway that gives you **one API key and one OpenAI-shaped API** in front of many LLM
 providers (OpenAI, Mistral, and more), plus embeddings, a managed RAG file store, moderation,
